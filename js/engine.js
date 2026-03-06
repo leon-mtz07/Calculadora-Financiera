@@ -1343,6 +1343,126 @@ const CalcEngine = (function () {
         updateDisplay();
     }
 
+    // ===== Financial Formulas =====
+
+    // --- Simple Interest ---
+    const simpleInterest = {
+        interest: (Vp, i, t) => Vp * i * t,
+        futureValue: (Vp, i, t) => Vp * (1 + i * t),
+        presentValue: (Vf, i, t) => Vf / (1 + i * t),
+        rate: (Vf, Vp, t) => t !== 0 ? ((Vf / Vp) - 1) / t : NaN,
+        time: (Vf, Vp, i) => i !== 0 ? ((Vf / Vp) - 1) / i : NaN,
+        discount: (Vf, d, t) => Vf * (1 - d * t)
+    };
+
+    // --- CETES (Mexican Treasury Bills) ---
+    const cetes = {
+        pvDiscount: (Vf, d, t) => Vf * (1 - (d * t) / 360),
+        pvYield: (Vf, tr, t) => Vf * Math.pow(1 + (tr * t) / 360, -1),
+        return_: (Vf, Vp) => Vf - Vp,
+        numCetes: (inversion, Vp) => Vp !== 0 ? Math.floor(inversion / Vp) : NaN,
+        yieldRate: (R, Vp) => Vp !== 0 ? R / Vp : NaN
+    };
+
+    // --- Compound Interest ---
+    const compoundInterest = {
+        futureValue: (Vp, i, n) => Vp * Math.pow(1 + i, n),
+        presentValue: (Vf, i, n) => Vf * Math.pow(1 + i, -n),
+        time: (Vf, Vp, i) => i > -1 && i !== 0 ? Math.log(Vf / Vp) / Math.log(1 + i) : NaN,
+        rate: (Vf, Vp, n) => n !== 0 ? Math.pow(Vf / Vp, 1 / n) - 1 : NaN,
+        realValue: (Vf, inflation) => Vf / (1 + inflation),
+        realRate: (iN, inflation) => (iN - inflation) / (1 + inflation)
+    };
+
+    // --- Interest Rates ---
+    const interestRates = {
+        effectivePerPeriod: (jnom, m) => m !== 0 ? jnom / m : NaN,
+        effectiveAnnual: (jnom, m) => Math.pow(1 + jnom / m, m) - 1,
+        nominalFromEffective: (iE, k) => (Math.pow(1 + iE, 1 / k) - 1) * k,
+        equivalentNominal: (jnom, m, n) => (Math.pow(1 + jnom / m, m / n) - 1) * n,
+        convertNominal: (jnom1, m1, m2) => (Math.pow(1 + jnom1 / m1, m1 / m2) - 1) * m2
+    };
+
+    // --- Ordinary Annuities (Vencidas) ---
+    const annuityOrd = {
+        futureValue: (A, i, n) => i !== 0 ? A * ((Math.pow(1 + i, n) - 1) / i) : A * n,
+        rentFromFV: (Vf, i, n) => {
+            if (i === 0) return n !== 0 ? Vf / n : NaN;
+            return Vf * i / (Math.pow(1 + i, n) - 1);
+        },
+        termFromFV: (Vf, A, i) => {
+            if (i === 0) return A !== 0 ? Vf / A : NaN;
+            return Math.log((Vf * i / A) + 1) / Math.log(1 + i);
+        },
+        presentValue: (A, i, n) => i !== 0 ? A * ((1 - Math.pow(1 + i, -n)) / i) : A * n,
+        rentFromPV: (Vp, i, n) => {
+            if (i === 0) return n !== 0 ? Vp / n : NaN;
+            return Vp * i / (1 - Math.pow(1 + i, -n));
+        },
+        termFromPV: (Vp, A, i) => {
+            if (i === 0) return A !== 0 ? Vp / A : NaN;
+            return -Math.log(1 - (Vp * i / A)) / Math.log(1 + i);
+        }
+    };
+
+    // --- Annuities Due (Anticipadas) ---
+    const annuityDue = {
+        futureValue: (A, i, n) => i !== 0 ? A * ((Math.pow(1 + i, n) - 1) / i) * (1 + i) : A * n,
+        rentFromFV: (Vf, i, n) => {
+            if (i === 0) return n !== 0 ? Vf / n : NaN;
+            return Vf * i / ((Math.pow(1 + i, n) - 1) * (1 + i));
+        },
+        termFromFV: (Vf, A, i) => {
+            if (i === 0) return A !== 0 ? Vf / A : NaN;
+            return Math.log((Vf * i / (A * (1 + i))) + 1) / Math.log(1 + i);
+        },
+        presentValue: (A, i, n) => i !== 0 ? A * ((1 - Math.pow(1 + i, -n)) / i) * (1 + i) : A * n,
+        rentFromPV: (Vp, i, n) => {
+            if (i === 0) return n !== 0 ? Vp / n : NaN;
+            return Vp * i / ((1 - Math.pow(1 + i, -n)) * (1 + i));
+        },
+        termFromPV: (Vp, A, i) => {
+            if (i === 0) return A !== 0 ? Vp / A : NaN;
+            return -Math.log(1 - (Vp * i / (A * (1 + i)))) / Math.log(1 + i);
+        }
+    };
+
+    // --- Deferred Annuities ---
+    const annuityDeferred = {
+        presentValue: (A, i, n, d) => {
+            if (i === 0) return A * n;
+            return A * ((1 - Math.pow(1 + i, -n)) / (i * Math.pow(1 + i, d)));
+        },
+        termFromDeferred: (Vp, A, i, d) => {
+            if (i === 0) return A !== 0 ? Vp / A : NaN;
+            return -Math.log(1 - (Vp * i * Math.pow(1 + i, d) / A)) / Math.log(1 + i);
+        },
+        rentFromDeferred: (Vp, i, n, d) => {
+            if (i === 0) return n !== 0 ? Vp / n : NaN;
+            return Vp * i * Math.pow(1 + i, d) / (1 - Math.pow(1 + i, -n));
+        }
+    };
+
+    // --- Perpetuities ---
+    const perpetuity = {
+        presentValue: (Ap, i) => i !== 0 ? Ap / i : NaN,
+        annuity: (P, i) => P * i,
+        rateFromDonation: (Ap, P, Ro) => (P - Ro) !== 0 ? Ap / (P - Ro) : NaN,
+        totalDonation: (Ro, Ap, i) => i !== 0 ? Ro + Ap / i : NaN,
+        pvAnnuityPerpetuity: (Ap, i, n) => {
+            if (i === 0) return NaN;
+            return Ap / (Math.pow(1 + i, n) - 1);
+        }
+    };
+
+    // --- Replacement Cost ---
+    const replacementCost = {
+        totalCost: (K, i, n) => {
+            let factor = Math.pow(1 + i, n);
+            return (factor - 1) !== 0 ? K * factor / (factor - 1) : NaN;
+        }
+    };
+
     // ===== Public API =====
     return {
         state,
@@ -1394,6 +1514,15 @@ const CalcEngine = (function () {
         fullReset,
         parseDate,
         formatDate,
-        applyOp
+        applyOp,
+        simpleInterest,
+        cetes,
+        compoundInterest,
+        interestRates,
+        annuityOrd,
+        annuityDue,
+        annuityDeferred,
+        perpetuity,
+        replacementCost
     };
 })();

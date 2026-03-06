@@ -974,6 +974,772 @@ const Worksheets = (function () {
         openCashFlow();
     }
 
+    // ===== FORMULAS MENU =====
+    function openFormulas() {
+        let html = `
+        <div class="ws-section-title">Fórmulas Financieras</div>
+        <div class="ws-btn-row"><button class="ws-btn ws-btn-primary" style="flex:1" onclick="Worksheets.openSimpleInterest()">Interés Simple</button></div>
+        <div class="ws-btn-row"><button class="ws-btn ws-btn-primary" style="flex:1" onclick="Worksheets.openCetesWS()">CETES (Instrumentos Bursátiles)</button></div>
+        <div class="ws-btn-row"><button class="ws-btn ws-btn-primary" style="flex:1" onclick="Worksheets.openCompoundInterest()">Interés Compuesto</button></div>
+        <div class="ws-btn-row"><button class="ws-btn ws-btn-primary" style="flex:1" onclick="Worksheets.openInterestRates()">Tasas de Interés</button></div>
+        <div class="ws-btn-row"><button class="ws-btn ws-btn-primary" style="flex:1" onclick="Worksheets.openAnnuityOrd()">Anualidades Vencidas</button></div>
+        <div class="ws-btn-row"><button class="ws-btn ws-btn-primary" style="flex:1" onclick="Worksheets.openAnnuityDue()">Anualidades Anticipadas</button></div>
+        <div class="ws-btn-row"><button class="ws-btn ws-btn-primary" style="flex:1" onclick="Worksheets.openAnnuityDeferred()">Anualidades Diferidas</button></div>
+        <div class="ws-btn-row"><button class="ws-btn ws-btn-primary" style="flex:1" onclick="Worksheets.openPerpetuityWS()">Perpetuidades</button></div>
+        <div class="ws-btn-row"><button class="ws-btn ws-btn-primary" style="flex:1" onclick="Worksheets.openReplacementCost()">Costo de Reemplazos</button></div>
+        `;
+        show('Fórmulas Financieras', html);
+        E.state.activeWorksheet = 'FORMULAS';
+    }
+
+    // ===== Simple Interest =====
+    function openSimpleInterest() {
+        let html = `
+        <div class="ws-section-title">Interés Simple</div>
+        <p class="ws-info">I = Vp &times; i &times; t &nbsp;|&nbsp; Vf = Vp(1 + it) &nbsp;|&nbsp; Vl = Vf(1 - dt)</p>
+        <div class="ws-field">
+            <span class="ws-field-label">Vp</span>
+            <input type="number" class="ws-field-value" id="ws-si-vp" value="0" step="any" placeholder="Valor Presente">
+        </div>
+        <div class="ws-field">
+            <span class="ws-field-label">Vf</span>
+            <input type="number" class="ws-field-value" id="ws-si-vf" value="0" step="any" placeholder="Valor Futuro">
+        </div>
+        <div class="ws-field">
+            <span class="ws-field-label">i (dec)</span>
+            <input type="number" class="ws-field-value" id="ws-si-i" value="0" step="any" placeholder="Tasa de interés (decimal)">
+        </div>
+        <div class="ws-field">
+            <span class="ws-field-label">t</span>
+            <input type="number" class="ws-field-value" id="ws-si-t" value="0" step="any" placeholder="Tiempo (períodos)">
+        </div>
+        <div class="ws-field">
+            <span class="ws-field-label">d (dec)</span>
+            <input type="number" class="ws-field-value" id="ws-si-d" value="0" step="any" placeholder="Tasa de descuento (decimal)">
+        </div>
+        <div class="ws-section-title">Calcular</div>
+        <div class="ws-btn-row">
+            <button class="ws-btn ws-btn-primary" onclick="Worksheets.calcSI('I')">Interés</button>
+            <button class="ws-btn ws-btn-primary" onclick="Worksheets.calcSI('VF')">Vf</button>
+            <button class="ws-btn ws-btn-primary" onclick="Worksheets.calcSI('VP')">Vp</button>
+        </div>
+        <div class="ws-btn-row">
+            <button class="ws-btn ws-btn-secondary" onclick="Worksheets.calcSI('RATE')">Tasa (i)</button>
+            <button class="ws-btn ws-btn-secondary" onclick="Worksheets.calcSI('TIME')">Tiempo (t)</button>
+            <button class="ws-btn ws-btn-secondary" onclick="Worksheets.calcSI('DISC')">Descuento (Vl)</button>
+        </div>
+        <div id="ws-si-result"></div>
+        <div class="ws-btn-row" style="margin-top:12px">
+            <button class="ws-btn ws-btn-secondary" onclick="Worksheets.openFormulas()">← Menú Fórmulas</button>
+        </div>`;
+        show('Interés Simple', html);
+        E.state.activeWorksheet = 'SI';
+    }
+
+    function calcSI(solve) {
+        let Vp = parseFloat(document.getElementById('ws-si-vp').value) || 0;
+        let Vf = parseFloat(document.getElementById('ws-si-vf').value) || 0;
+        let i = parseFloat(document.getElementById('ws-si-i').value) || 0;
+        let t = parseFloat(document.getElementById('ws-si-t').value) || 0;
+        let d = parseFloat(document.getElementById('ws-si-d').value) || 0;
+        let result, label;
+        switch (solve) {
+            case 'I':
+                result = E.simpleInterest.interest(Vp, i, t);
+                label = 'I';
+                break;
+            case 'VF':
+                result = E.simpleInterest.futureValue(Vp, i, t);
+                label = 'Vf';
+                document.getElementById('ws-si-vf').value = result;
+                break;
+            case 'VP':
+                result = E.simpleInterest.presentValue(Vf, i, t);
+                label = 'Vp';
+                document.getElementById('ws-si-vp').value = result;
+                break;
+            case 'RATE':
+                result = E.simpleInterest.rate(Vf, Vp, t);
+                label = 'i';
+                document.getElementById('ws-si-i').value = result;
+                break;
+            case 'TIME':
+                result = E.simpleInterest.time(Vf, Vp, i);
+                label = 't';
+                document.getElementById('ws-si-t').value = result;
+                break;
+            case 'DISC':
+                result = E.simpleInterest.discount(Vf, d, t);
+                label = 'Vl';
+                break;
+        }
+        let el = document.getElementById('ws-si-result');
+        if (isNaN(result)) {
+            el.innerHTML = '<p class="ws-info" style="color:#e88">Error en el cálculo. Verifica los datos.</p>';
+            return;
+        }
+        el.innerHTML = `<div class="ws-field"><span class="ws-field-label">${label}</span><input class="ws-field-value" readonly value="${fmt(result)}"></div>`;
+        E.setDisplayValue(result, label + '=', '');
+    }
+
+    // ===== CETES =====
+    function openCetesWS() {
+        let html = `
+        <div class="ws-section-title">Valuación de CETES</div>
+        <p class="ws-info">Vp = Vf(1 - dt/360) &nbsp;|&nbsp; Vp = Vf(1 + tr&middot;t/360)⁻¹ &nbsp;|&nbsp; R = Vf - Vp &nbsp;|&nbsp; tr = R/Vp</p>
+        <div class="ws-field">
+            <span class="ws-field-label">Vf</span>
+            <input type="number" class="ws-field-value" id="ws-cetes-vf" value="10" step="any" placeholder="Valor nominal">
+        </div>
+        <div class="ws-field">
+            <span class="ws-field-label">Vp</span>
+            <input type="number" class="ws-field-value" id="ws-cetes-vp" value="0" step="any" placeholder="Precio de compra">
+        </div>
+        <div class="ws-field">
+            <span class="ws-field-label">d (dec)</span>
+            <input type="number" class="ws-field-value" id="ws-cetes-d" value="0" step="any" placeholder="Tasa de descuento">
+        </div>
+        <div class="ws-field">
+            <span class="ws-field-label">tr (dec)</span>
+            <input type="number" class="ws-field-value" id="ws-cetes-tr" value="0" step="any" placeholder="Tasa de rendimiento">
+        </div>
+        <div class="ws-field">
+            <span class="ws-field-label">t (días)</span>
+            <input type="number" class="ws-field-value" id="ws-cetes-t" value="28" step="1" placeholder="Plazo en días">
+        </div>
+        <div class="ws-field">
+            <span class="ws-field-label">Inversión</span>
+            <input type="number" class="ws-field-value" id="ws-cetes-inv" value="0" step="any" placeholder="Monto a invertir">
+        </div>
+        <div class="ws-section-title">Calcular</div>
+        <div class="ws-btn-row">
+            <button class="ws-btn ws-btn-primary" onclick="Worksheets.calcCetes('VP_D')">Vp (con desc.)</button>
+            <button class="ws-btn ws-btn-primary" onclick="Worksheets.calcCetes('VP_R')">Vp (con rend.)</button>
+        </div>
+        <div class="ws-btn-row">
+            <button class="ws-btn ws-btn-secondary" onclick="Worksheets.calcCetes('R')">Rendimiento ($)</button>
+            <button class="ws-btn ws-btn-secondary" onclick="Worksheets.calcCetes('TR')">Tasa rend.</button>
+            <button class="ws-btn ws-btn-secondary" onclick="Worksheets.calcCetes('NC')">Núm. CETES</button>
+        </div>
+        <div id="ws-cetes-result"></div>
+        <div class="ws-btn-row" style="margin-top:12px">
+            <button class="ws-btn ws-btn-secondary" onclick="Worksheets.openFormulas()">← Menú Fórmulas</button>
+        </div>`;
+        show('CETES', html);
+        E.state.activeWorksheet = 'CETES';
+    }
+
+    function calcCetes(solve) {
+        let Vf = parseFloat(document.getElementById('ws-cetes-vf').value) || 0;
+        let Vp = parseFloat(document.getElementById('ws-cetes-vp').value) || 0;
+        let d = parseFloat(document.getElementById('ws-cetes-d').value) || 0;
+        let tr = parseFloat(document.getElementById('ws-cetes-tr').value) || 0;
+        let t = parseFloat(document.getElementById('ws-cetes-t').value) || 0;
+        let inv = parseFloat(document.getElementById('ws-cetes-inv').value) || 0;
+        let result, label;
+        switch (solve) {
+            case 'VP_D':
+                result = E.cetes.pvDiscount(Vf, d, t);
+                label = 'Vp(desc)';
+                document.getElementById('ws-cetes-vp').value = result;
+                break;
+            case 'VP_R':
+                result = E.cetes.pvYield(Vf, tr, t);
+                label = 'Vp(rend)';
+                document.getElementById('ws-cetes-vp').value = result;
+                break;
+            case 'R':
+                result = E.cetes.return_(Vf, Vp);
+                label = 'R';
+                break;
+            case 'TR':
+                let R = Vf - Vp;
+                result = E.cetes.yieldRate(R, Vp);
+                label = 'tr';
+                document.getElementById('ws-cetes-tr').value = result;
+                break;
+            case 'NC':
+                result = E.cetes.numCetes(inv, Vp);
+                label = 'N° CETES';
+                break;
+        }
+        let el = document.getElementById('ws-cetes-result');
+        if (isNaN(result)) {
+            el.innerHTML = '<p class="ws-info" style="color:#e88">Error en el cálculo.</p>';
+            return;
+        }
+        el.innerHTML = `<div class="ws-field"><span class="ws-field-label">${label}</span><input class="ws-field-value" readonly value="${fmt(result)}"></div>`;
+        E.setDisplayValue(result, label + '=', '');
+    }
+
+    // ===== Compound Interest =====
+    function openCompoundInterest() {
+        let html = `
+        <div class="ws-section-title">Interés Compuesto</div>
+        <p class="ws-info">Vf = Vp(1+i)ⁿ &nbsp;|&nbsp; VR = Vf/(1+λ) &nbsp;|&nbsp; iR = (iN-λ)/(1+λ)</p>
+        <div class="ws-field">
+            <span class="ws-field-label">Vp</span>
+            <input type="number" class="ws-field-value" id="ws-ci-vp" value="0" step="any" placeholder="Valor Presente">
+        </div>
+        <div class="ws-field">
+            <span class="ws-field-label">Vf</span>
+            <input type="number" class="ws-field-value" id="ws-ci-vf" value="0" step="any" placeholder="Valor Futuro">
+        </div>
+        <div class="ws-field">
+            <span class="ws-field-label">i (dec)</span>
+            <input type="number" class="ws-field-value" id="ws-ci-i" value="0" step="any" placeholder="Tasa por período (decimal)">
+        </div>
+        <div class="ws-field">
+            <span class="ws-field-label">n</span>
+            <input type="number" class="ws-field-value" id="ws-ci-n" value="0" step="any" placeholder="Número de períodos">
+        </div>
+        <div class="ws-field">
+            <span class="ws-field-label">λ (dec)</span>
+            <input type="number" class="ws-field-value" id="ws-ci-inf" value="0" step="any" placeholder="Inflación (decimal)">
+        </div>
+        <div class="ws-section-title">Calcular</div>
+        <div class="ws-btn-row">
+            <button class="ws-btn ws-btn-primary" onclick="Worksheets.calcCI('VF')">Vf</button>
+            <button class="ws-btn ws-btn-primary" onclick="Worksheets.calcCI('VP')">Vp</button>
+            <button class="ws-btn ws-btn-primary" onclick="Worksheets.calcCI('N')">Tiempo (n)</button>
+        </div>
+        <div class="ws-btn-row">
+            <button class="ws-btn ws-btn-secondary" onclick="Worksheets.calcCI('RATE')">Tasa (i)</button>
+            <button class="ws-btn ws-btn-secondary" onclick="Worksheets.calcCI('VR')">Valor Real</button>
+            <button class="ws-btn ws-btn-secondary" onclick="Worksheets.calcCI('IR')">Tasa Real</button>
+        </div>
+        <div id="ws-ci-result"></div>
+        <div class="ws-btn-row" style="margin-top:12px">
+            <button class="ws-btn ws-btn-secondary" onclick="Worksheets.openFormulas()">← Menú Fórmulas</button>
+        </div>`;
+        show('Interés Compuesto', html);
+        E.state.activeWorksheet = 'CI';
+    }
+
+    function calcCI(solve) {
+        let Vp = parseFloat(document.getElementById('ws-ci-vp').value) || 0;
+        let Vf = parseFloat(document.getElementById('ws-ci-vf').value) || 0;
+        let i = parseFloat(document.getElementById('ws-ci-i').value) || 0;
+        let n = parseFloat(document.getElementById('ws-ci-n').value) || 0;
+        let inf = parseFloat(document.getElementById('ws-ci-inf').value) || 0;
+        let result, label;
+        switch (solve) {
+            case 'VF':
+                result = E.compoundInterest.futureValue(Vp, i, n);
+                label = 'Vf';
+                document.getElementById('ws-ci-vf').value = result;
+                break;
+            case 'VP':
+                result = E.compoundInterest.presentValue(Vf, i, n);
+                label = 'Vp';
+                document.getElementById('ws-ci-vp').value = result;
+                break;
+            case 'N':
+                result = E.compoundInterest.time(Vf, Vp, i);
+                label = 'n';
+                document.getElementById('ws-ci-n').value = result;
+                break;
+            case 'RATE':
+                result = E.compoundInterest.rate(Vf, Vp, n);
+                label = 'i';
+                document.getElementById('ws-ci-i').value = result;
+                break;
+            case 'VR':
+                result = E.compoundInterest.realValue(Vf, inf);
+                label = 'VR';
+                break;
+            case 'IR':
+                result = E.compoundInterest.realRate(i, inf);
+                label = 'iR';
+                break;
+        }
+        let el = document.getElementById('ws-ci-result');
+        if (isNaN(result)) {
+            el.innerHTML = '<p class="ws-info" style="color:#e88">Error en el cálculo.</p>';
+            return;
+        }
+        el.innerHTML = `<div class="ws-field"><span class="ws-field-label">${label}</span><input class="ws-field-value" readonly value="${fmt(result)}"></div>`;
+        E.setDisplayValue(result, label + '=', '');
+    }
+
+    // ===== Interest Rates =====
+    function openInterestRates() {
+        let html = `
+        <div class="ws-section-title">Conversión de Tasas de Interés</div>
+        <p class="ws-info">i = jnom/m &nbsp;|&nbsp; iE = (1+j/m)^m - 1 &nbsp;|&nbsp; j = [(1+iE)^(1/k) - 1]k</p>
+        <div class="ws-field">
+            <span class="ws-field-label">j nom (dec)</span>
+            <input type="number" class="ws-field-value" id="ws-ir-jnom" value="0" step="any" placeholder="Tasa nominal (decimal)">
+        </div>
+        <div class="ws-field">
+            <span class="ws-field-label">m</span>
+            <input type="number" class="ws-field-value" id="ws-ir-m" value="12" step="1" min="1" placeholder="Capitalizaciones/año">
+        </div>
+        <div class="ws-field">
+            <span class="ws-field-label">iE (dec)</span>
+            <input type="number" class="ws-field-value" id="ws-ir-ie" value="0" step="any" placeholder="Tasa efectiva anual (decimal)">
+        </div>
+        <div class="ws-field">
+            <span class="ws-field-label">k</span>
+            <input type="number" class="ws-field-value" id="ws-ir-k" value="1" step="1" min="1" placeholder="Cap/año para nominal">
+        </div>
+        <div class="ws-section-title">Conversión entre Nominales</div>
+        <div class="ws-field">
+            <span class="ws-field-label">j₁ (dec)</span>
+            <input type="number" class="ws-field-value" id="ws-ir-j1" value="0" step="any" placeholder="Tasa nominal 1 (decimal)">
+        </div>
+        <div class="ws-field">
+            <span class="ws-field-label">m₁</span>
+            <input type="number" class="ws-field-value" id="ws-ir-m1" value="12" step="1" min="1" placeholder="Capitalizaciones nominal 1">
+        </div>
+        <div class="ws-field">
+            <span class="ws-field-label">m₂</span>
+            <input type="number" class="ws-field-value" id="ws-ir-m2" value="4" step="1" min="1" placeholder="Capitalizaciones nominal 2">
+        </div>
+        <div class="ws-section-title">Calcular</div>
+        <div class="ws-btn-row">
+            <button class="ws-btn ws-btn-primary" onclick="Worksheets.calcIR('EPP')">i efectiva/período</button>
+            <button class="ws-btn ws-btn-primary" onclick="Worksheets.calcIR('EA')">Efect. Anual</button>
+        </div>
+        <div class="ws-btn-row">
+            <button class="ws-btn ws-btn-secondary" onclick="Worksheets.calcIR('NOM')">Nominal (de Efect.)</button>
+            <button class="ws-btn ws-btn-secondary" onclick="Worksheets.calcIR('EQN')">Equiv. Nominal</button>
+            <button class="ws-btn ws-btn-secondary" onclick="Worksheets.calcIR('CNV')">Convertir j₁→j₂</button>
+        </div>
+        <div id="ws-ir-result"></div>
+        <div class="ws-btn-row" style="margin-top:12px">
+            <button class="ws-btn ws-btn-secondary" onclick="Worksheets.openFormulas()">← Menú Fórmulas</button>
+        </div>`;
+        show('Tasas de Interés', html);
+        E.state.activeWorksheet = 'IRATES';
+    }
+
+    function calcIR(solve) {
+        let jnom = parseFloat(document.getElementById('ws-ir-jnom').value) || 0;
+        let m = parseFloat(document.getElementById('ws-ir-m').value) || 1;
+        let iE = parseFloat(document.getElementById('ws-ir-ie').value) || 0;
+        let k = parseFloat(document.getElementById('ws-ir-k').value) || 1;
+        let j1 = parseFloat(document.getElementById('ws-ir-j1').value) || 0;
+        let m1 = parseFloat(document.getElementById('ws-ir-m1').value) || 1;
+        let m2 = parseFloat(document.getElementById('ws-ir-m2').value) || 1;
+        let result, label;
+        switch (solve) {
+            case 'EPP':
+                result = E.interestRates.effectivePerPeriod(jnom, m);
+                label = 'i por período';
+                break;
+            case 'EA':
+                result = E.interestRates.effectiveAnnual(jnom, m);
+                label = 'iE anual';
+                document.getElementById('ws-ir-ie').value = result;
+                break;
+            case 'NOM':
+                result = E.interestRates.nominalFromEffective(iE, k);
+                label = 'j nominal';
+                document.getElementById('ws-ir-jnom').value = result;
+                break;
+            case 'EQN':
+                result = E.interestRates.equivalentNominal(jnom, m, k);
+                label = 'j equiv. (n=' + k + ')';
+                break;
+            case 'CNV':
+                result = E.interestRates.convertNominal(j1, m1, m2);
+                label = 'j₂ (m₂=' + m2 + ')';
+                break;
+        }
+        let el = document.getElementById('ws-ir-result');
+        if (isNaN(result)) {
+            el.innerHTML = '<p class="ws-info" style="color:#e88">Error en el cálculo.</p>';
+            return;
+        }
+        el.innerHTML = `<div class="ws-field"><span class="ws-field-label">${label}</span><input class="ws-field-value" readonly value="${fmt(result)}"></div>`;
+        E.setDisplayValue(result, label + '=', '');
+    }
+
+    // ===== Ordinary Annuities (Vencidas) =====
+    function openAnnuityOrd() {
+        let html = `
+        <div class="ws-section-title">Anualidades Vencidas</div>
+        <p class="ws-info">Vf = A[(1+i)ⁿ-1]/i &nbsp;|&nbsp; Vp = A[1-(1+i)⁻ⁿ]/i</p>
+        <div class="ws-field">
+            <span class="ws-field-label">A</span>
+            <input type="number" class="ws-field-value" id="ws-ao-a" value="0" step="any" placeholder="Renta (pago periódico)">
+        </div>
+        <div class="ws-field">
+            <span class="ws-field-label">i (dec)</span>
+            <input type="number" class="ws-field-value" id="ws-ao-i" value="0" step="any" placeholder="Tasa por período (decimal)">
+        </div>
+        <div class="ws-field">
+            <span class="ws-field-label">n</span>
+            <input type="number" class="ws-field-value" id="ws-ao-n" value="0" step="any" placeholder="Número de períodos">
+        </div>
+        <div class="ws-field">
+            <span class="ws-field-label">Vf</span>
+            <input type="number" class="ws-field-value" id="ws-ao-vf" value="0" step="any" placeholder="Valor Futuro">
+        </div>
+        <div class="ws-field">
+            <span class="ws-field-label">Vp</span>
+            <input type="number" class="ws-field-value" id="ws-ao-vp" value="0" step="any" placeholder="Valor Presente">
+        </div>
+        <div class="ws-section-title">Con Valor Futuro</div>
+        <div class="ws-btn-row">
+            <button class="ws-btn ws-btn-primary" onclick="Worksheets.calcAO('VF')">Calcular Vf</button>
+            <button class="ws-btn ws-btn-primary" onclick="Worksheets.calcAO('A_VF')">Renta (de Vf)</button>
+            <button class="ws-btn ws-btn-primary" onclick="Worksheets.calcAO('N_VF')">Plazo (de Vf)</button>
+        </div>
+        <div class="ws-section-title">Con Valor Presente</div>
+        <div class="ws-btn-row">
+            <button class="ws-btn ws-btn-secondary" onclick="Worksheets.calcAO('VP')">Calcular Vp</button>
+            <button class="ws-btn ws-btn-secondary" onclick="Worksheets.calcAO('A_VP')">Renta (de Vp)</button>
+            <button class="ws-btn ws-btn-secondary" onclick="Worksheets.calcAO('N_VP')">Plazo (de Vp)</button>
+        </div>
+        <div id="ws-ao-result"></div>
+        <div class="ws-btn-row" style="margin-top:12px">
+            <button class="ws-btn ws-btn-secondary" onclick="Worksheets.openFormulas()">← Menú Fórmulas</button>
+        </div>`;
+        show('Anualidades Vencidas', html);
+        E.state.activeWorksheet = 'AO';
+    }
+
+    function calcAO(solve) {
+        let A = parseFloat(document.getElementById('ws-ao-a').value) || 0;
+        let i = parseFloat(document.getElementById('ws-ao-i').value) || 0;
+        let n = parseFloat(document.getElementById('ws-ao-n').value) || 0;
+        let Vf = parseFloat(document.getElementById('ws-ao-vf').value) || 0;
+        let Vp = parseFloat(document.getElementById('ws-ao-vp').value) || 0;
+        let result, label;
+        switch (solve) {
+            case 'VF':
+                result = E.annuityOrd.futureValue(A, i, n);
+                label = 'Vf';
+                document.getElementById('ws-ao-vf').value = result;
+                break;
+            case 'A_VF':
+                result = E.annuityOrd.rentFromFV(Vf, i, n);
+                label = 'A';
+                document.getElementById('ws-ao-a').value = result;
+                break;
+            case 'N_VF':
+                result = E.annuityOrd.termFromFV(Vf, A, i);
+                label = 'n';
+                document.getElementById('ws-ao-n').value = result;
+                break;
+            case 'VP':
+                result = E.annuityOrd.presentValue(A, i, n);
+                label = 'Vp';
+                document.getElementById('ws-ao-vp').value = result;
+                break;
+            case 'A_VP':
+                result = E.annuityOrd.rentFromPV(Vp, i, n);
+                label = 'A';
+                document.getElementById('ws-ao-a').value = result;
+                break;
+            case 'N_VP':
+                result = E.annuityOrd.termFromPV(Vp, A, i);
+                label = 'n';
+                document.getElementById('ws-ao-n').value = result;
+                break;
+        }
+        let el = document.getElementById('ws-ao-result');
+        if (isNaN(result) || !isFinite(result)) {
+            el.innerHTML = '<p class="ws-info" style="color:#e88">Error en el cálculo. Verifica los datos.</p>';
+            return;
+        }
+        el.innerHTML = `<div class="ws-field"><span class="ws-field-label">${label}</span><input class="ws-field-value" readonly value="${fmt(result)}"></div>`;
+        E.setDisplayValue(result, label + '=', '');
+    }
+
+    // ===== Annuities Due (Anticipadas) =====
+    function openAnnuityDue() {
+        let html = `
+        <div class="ws-section-title">Anualidades Anticipadas</div>
+        <p class="ws-info">Vf = A[(1+i)ⁿ-1]/i × (1+i) &nbsp;|&nbsp; Vp = A[1-(1+i)⁻ⁿ]/i × (1+i)</p>
+        <div class="ws-field">
+            <span class="ws-field-label">A</span>
+            <input type="number" class="ws-field-value" id="ws-ad-a" value="0" step="any" placeholder="Renta">
+        </div>
+        <div class="ws-field">
+            <span class="ws-field-label">i (dec)</span>
+            <input type="number" class="ws-field-value" id="ws-ad-i" value="0" step="any" placeholder="Tasa por período (decimal)">
+        </div>
+        <div class="ws-field">
+            <span class="ws-field-label">n</span>
+            <input type="number" class="ws-field-value" id="ws-ad-n" value="0" step="any" placeholder="Número de períodos">
+        </div>
+        <div class="ws-field">
+            <span class="ws-field-label">Vf</span>
+            <input type="number" class="ws-field-value" id="ws-ad-vf" value="0" step="any" placeholder="Valor Futuro">
+        </div>
+        <div class="ws-field">
+            <span class="ws-field-label">Vp</span>
+            <input type="number" class="ws-field-value" id="ws-ad-vp" value="0" step="any" placeholder="Valor Presente">
+        </div>
+        <div class="ws-section-title">Con Valor Futuro</div>
+        <div class="ws-btn-row">
+            <button class="ws-btn ws-btn-primary" onclick="Worksheets.calcAD('VF')">Calcular Vf</button>
+            <button class="ws-btn ws-btn-primary" onclick="Worksheets.calcAD('A_VF')">Renta (de Vf)</button>
+            <button class="ws-btn ws-btn-primary" onclick="Worksheets.calcAD('N_VF')">Plazo (de Vf)</button>
+        </div>
+        <div class="ws-section-title">Con Valor Presente</div>
+        <div class="ws-btn-row">
+            <button class="ws-btn ws-btn-secondary" onclick="Worksheets.calcAD('VP')">Calcular Vp</button>
+            <button class="ws-btn ws-btn-secondary" onclick="Worksheets.calcAD('A_VP')">Renta (de Vp)</button>
+            <button class="ws-btn ws-btn-secondary" onclick="Worksheets.calcAD('N_VP')">Plazo (de Vp)</button>
+        </div>
+        <div id="ws-ad-result"></div>
+        <div class="ws-btn-row" style="margin-top:12px">
+            <button class="ws-btn ws-btn-secondary" onclick="Worksheets.openFormulas()">← Menú Fórmulas</button>
+        </div>`;
+        show('Anualidades Anticipadas', html);
+        E.state.activeWorksheet = 'AD';
+    }
+
+    function calcAD(solve) {
+        let A = parseFloat(document.getElementById('ws-ad-a').value) || 0;
+        let i = parseFloat(document.getElementById('ws-ad-i').value) || 0;
+        let n = parseFloat(document.getElementById('ws-ad-n').value) || 0;
+        let Vf = parseFloat(document.getElementById('ws-ad-vf').value) || 0;
+        let Vp = parseFloat(document.getElementById('ws-ad-vp').value) || 0;
+        let result, label;
+        switch (solve) {
+            case 'VF':
+                result = E.annuityDue.futureValue(A, i, n);
+                label = 'Vf';
+                document.getElementById('ws-ad-vf').value = result;
+                break;
+            case 'A_VF':
+                result = E.annuityDue.rentFromFV(Vf, i, n);
+                label = 'A';
+                document.getElementById('ws-ad-a').value = result;
+                break;
+            case 'N_VF':
+                result = E.annuityDue.termFromFV(Vf, A, i);
+                label = 'n';
+                document.getElementById('ws-ad-n').value = result;
+                break;
+            case 'VP':
+                result = E.annuityDue.presentValue(A, i, n);
+                label = 'Vp';
+                document.getElementById('ws-ad-vp').value = result;
+                break;
+            case 'A_VP':
+                result = E.annuityDue.rentFromPV(Vp, i, n);
+                label = 'A';
+                document.getElementById('ws-ad-a').value = result;
+                break;
+            case 'N_VP':
+                result = E.annuityDue.termFromPV(Vp, A, i);
+                label = 'n';
+                document.getElementById('ws-ad-n').value = result;
+                break;
+        }
+        let el = document.getElementById('ws-ad-result');
+        if (isNaN(result) || !isFinite(result)) {
+            el.innerHTML = '<p class="ws-info" style="color:#e88">Error en el cálculo. Verifica los datos.</p>';
+            return;
+        }
+        el.innerHTML = `<div class="ws-field"><span class="ws-field-label">${label}</span><input class="ws-field-value" readonly value="${fmt(result)}"></div>`;
+        E.setDisplayValue(result, label + '=', '');
+    }
+
+    // ===== Deferred Annuities =====
+    function openAnnuityDeferred() {
+        let html = `
+        <div class="ws-section-title">Anualidades Diferidas</div>
+        <p class="ws-info">Vp = A[1-(1+i)⁻ⁿ] / [i(1+i)ᵈ]</p>
+        <div class="ws-field">
+            <span class="ws-field-label">A</span>
+            <input type="number" class="ws-field-value" id="ws-adf-a" value="0" step="any" placeholder="Renta">
+        </div>
+        <div class="ws-field">
+            <span class="ws-field-label">i (dec)</span>
+            <input type="number" class="ws-field-value" id="ws-adf-i" value="0" step="any" placeholder="Tasa por período (decimal)">
+        </div>
+        <div class="ws-field">
+            <span class="ws-field-label">n</span>
+            <input type="number" class="ws-field-value" id="ws-adf-n" value="0" step="any" placeholder="Número de períodos de pago">
+        </div>
+        <div class="ws-field">
+            <span class="ws-field-label">d</span>
+            <input type="number" class="ws-field-value" id="ws-adf-d" value="0" step="any" placeholder="Períodos de diferimiento">
+        </div>
+        <div class="ws-field">
+            <span class="ws-field-label">Vp</span>
+            <input type="number" class="ws-field-value" id="ws-adf-vp" value="0" step="any" placeholder="Valor Presente (diferido)">
+        </div>
+        <div class="ws-section-title">Calcular</div>
+        <div class="ws-btn-row">
+            <button class="ws-btn ws-btn-primary" onclick="Worksheets.calcADF('VP')">Valor Presente</button>
+            <button class="ws-btn ws-btn-primary" onclick="Worksheets.calcADF('N')">Plazo (n)</button>
+            <button class="ws-btn ws-btn-primary" onclick="Worksheets.calcADF('A')">Renta (A)</button>
+        </div>
+        <div id="ws-adf-result"></div>
+        <div class="ws-btn-row" style="margin-top:12px">
+            <button class="ws-btn ws-btn-secondary" onclick="Worksheets.openFormulas()">← Menú Fórmulas</button>
+        </div>`;
+        show('Anualidades Diferidas', html);
+        E.state.activeWorksheet = 'ADF';
+    }
+
+    function calcADF(solve) {
+        let A = parseFloat(document.getElementById('ws-adf-a').value) || 0;
+        let i = parseFloat(document.getElementById('ws-adf-i').value) || 0;
+        let n = parseFloat(document.getElementById('ws-adf-n').value) || 0;
+        let d = parseFloat(document.getElementById('ws-adf-d').value) || 0;
+        let Vp = parseFloat(document.getElementById('ws-adf-vp').value) || 0;
+        let result, label;
+        switch (solve) {
+            case 'VP':
+                result = E.annuityDeferred.presentValue(A, i, n, d);
+                label = 'Vp';
+                document.getElementById('ws-adf-vp').value = result;
+                break;
+            case 'N':
+                result = E.annuityDeferred.termFromDeferred(Vp, A, i, d);
+                label = 'n';
+                document.getElementById('ws-adf-n').value = result;
+                break;
+            case 'A':
+                result = E.annuityDeferred.rentFromDeferred(Vp, i, n, d);
+                label = 'A';
+                document.getElementById('ws-adf-a').value = result;
+                break;
+        }
+        let el = document.getElementById('ws-adf-result');
+        if (isNaN(result) || !isFinite(result)) {
+            el.innerHTML = '<p class="ws-info" style="color:#e88">Error en el cálculo. Verifica los datos.</p>';
+            return;
+        }
+        el.innerHTML = `<div class="ws-field"><span class="ws-field-label">${label}</span><input class="ws-field-value" readonly value="${fmt(result)}"></div>`;
+        E.setDisplayValue(result, label + '=', '');
+    }
+
+    // ===== Perpetuities =====
+    function openPerpetuityWS() {
+        let html = `
+        <div class="ws-section-title">Perpetuidades</div>
+        <p class="ws-info">Ap = P × i &nbsp;|&nbsp; Vp = Ap/i &nbsp;|&nbsp; Vt = Ro + Ap/i</p>
+        <div class="ws-field">
+            <span class="ws-field-label">P</span>
+            <input type="number" class="ws-field-value" id="ws-perp-p" value="0" step="any" placeholder="Inversión inicial">
+        </div>
+        <div class="ws-field">
+            <span class="ws-field-label">i (dec)</span>
+            <input type="number" class="ws-field-value" id="ws-perp-i" value="0" step="any" placeholder="Tasa (decimal)">
+        </div>
+        <div class="ws-field">
+            <span class="ws-field-label">Ap</span>
+            <input type="number" class="ws-field-value" id="ws-perp-ap" value="0" step="any" placeholder="Anualidad perpetua">
+        </div>
+        <div class="ws-field">
+            <span class="ws-field-label">Ro</span>
+            <input type="number" class="ws-field-value" id="ws-perp-ro" value="0" step="any" placeholder="Donación inicial">
+        </div>
+        <div class="ws-field">
+            <span class="ws-field-label">n</span>
+            <input type="number" class="ws-field-value" id="ws-perp-n" value="0" step="any" placeholder="Períodos (para Vp perpetuidad)">
+        </div>
+        <div class="ws-section-title">Calcular</div>
+        <div class="ws-btn-row">
+            <button class="ws-btn ws-btn-primary" onclick="Worksheets.calcPerp('VP')">Valor Presente</button>
+            <button class="ws-btn ws-btn-primary" onclick="Worksheets.calcPerp('AP')">Anualidad (Ap)</button>
+        </div>
+        <div class="ws-btn-row">
+            <button class="ws-btn ws-btn-secondary" onclick="Worksheets.calcPerp('RATE')">Tasa (i)</button>
+            <button class="ws-btn ws-btn-secondary" onclick="Worksheets.calcPerp('VT')">Valor Total Donación</button>
+            <button class="ws-btn ws-btn-secondary" onclick="Worksheets.calcPerp('VP_N')">Vp Perpetuidad c/n</button>
+        </div>
+        <div id="ws-perp-result"></div>
+        <div class="ws-btn-row" style="margin-top:12px">
+            <button class="ws-btn ws-btn-secondary" onclick="Worksheets.openFormulas()">← Menú Fórmulas</button>
+        </div>`;
+        show('Perpetuidades', html);
+        E.state.activeWorksheet = 'PERP';
+    }
+
+    function calcPerp(solve) {
+        let P = parseFloat(document.getElementById('ws-perp-p').value) || 0;
+        let i = parseFloat(document.getElementById('ws-perp-i').value) || 0;
+        let Ap = parseFloat(document.getElementById('ws-perp-ap').value) || 0;
+        let Ro = parseFloat(document.getElementById('ws-perp-ro').value) || 0;
+        let n = parseFloat(document.getElementById('ws-perp-n').value) || 0;
+        let result, label;
+        switch (solve) {
+            case 'VP':
+                result = E.perpetuity.presentValue(Ap, i);
+                label = 'Vp';
+                document.getElementById('ws-perp-p').value = result;
+                break;
+            case 'AP':
+                result = E.perpetuity.annuity(P, i);
+                label = 'Ap';
+                document.getElementById('ws-perp-ap').value = result;
+                break;
+            case 'RATE':
+                result = E.perpetuity.rateFromDonation(Ap, P, Ro);
+                label = 'i';
+                document.getElementById('ws-perp-i').value = result;
+                break;
+            case 'VT':
+                result = E.perpetuity.totalDonation(Ro, Ap, i);
+                label = 'Vt';
+                break;
+            case 'VP_N':
+                result = E.perpetuity.pvAnnuityPerpetuity(Ap, i, n);
+                label = 'Vp';
+                break;
+        }
+        let el = document.getElementById('ws-perp-result');
+        if (isNaN(result) || !isFinite(result)) {
+            el.innerHTML = '<p class="ws-info" style="color:#e88">Error en el cálculo. Verifica los datos.</p>';
+            return;
+        }
+        el.innerHTML = `<div class="ws-field"><span class="ws-field-label">${label}</span><input class="ws-field-value" readonly value="${fmt(result)}"></div>`;
+        E.setDisplayValue(result, label + '=', '');
+    }
+
+    // ===== Replacement Cost =====
+    function openReplacementCost() {
+        let html = `
+        <div class="ws-section-title">Costo Total de Reemplazos Futuros</div>
+        <p class="ws-info">Ct = K(1+i)ⁿ / [(1+i)ⁿ - 1]</p>
+        <div class="ws-field">
+            <span class="ws-field-label">K</span>
+            <input type="number" class="ws-field-value" id="ws-rc-k" value="0" step="any" placeholder="Costo de reemplazo">
+        </div>
+        <div class="ws-field">
+            <span class="ws-field-label">i (dec)</span>
+            <input type="number" class="ws-field-value" id="ws-rc-i" value="0" step="any" placeholder="Tasa (decimal)">
+        </div>
+        <div class="ws-field">
+            <span class="ws-field-label">n</span>
+            <input type="number" class="ws-field-value" id="ws-rc-n" value="0" step="any" placeholder="Períodos">
+        </div>
+        <div class="ws-btn-row">
+            <button class="ws-btn ws-btn-primary" onclick="Worksheets.calcRC()">Calcular Costo Total</button>
+        </div>
+        <div id="ws-rc-result"></div>
+        <div class="ws-btn-row" style="margin-top:12px">
+            <button class="ws-btn ws-btn-secondary" onclick="Worksheets.openFormulas()">← Menú Fórmulas</button>
+        </div>`;
+        show('Costo de Reemplazos', html);
+        E.state.activeWorksheet = 'RC';
+    }
+
+    function calcRC() {
+        let K = parseFloat(document.getElementById('ws-rc-k').value) || 0;
+        let i = parseFloat(document.getElementById('ws-rc-i').value) || 0;
+        let n = parseFloat(document.getElementById('ws-rc-n').value) || 0;
+        let result = E.replacementCost.totalCost(K, i, n);
+        let el = document.getElementById('ws-rc-result');
+        if (isNaN(result) || !isFinite(result)) {
+            el.innerHTML = '<p class="ws-info" style="color:#e88">Error en el cálculo. Verifica los datos.</p>';
+            return;
+        }
+        el.innerHTML = `<div class="ws-field"><span class="ws-field-label">Ct</span><input class="ws-field-value" readonly value="${fmt(result)}"></div>`;
+        E.setDisplayValue(result, 'Ct=', '');
+    }
+
     // ===== Public API =====
     return {
         hide,
@@ -1018,6 +1784,25 @@ const Worksheets = (function () {
         applyMemory,
         clearMemory,
         openNPV,
-        openIRR
+        openIRR,
+        openFormulas,
+        openSimpleInterest,
+        calcSI,
+        openCetesWS,
+        calcCetes,
+        openCompoundInterest,
+        calcCI,
+        openInterestRates,
+        calcIR,
+        openAnnuityOrd,
+        calcAO,
+        openAnnuityDue,
+        calcAD,
+        openAnnuityDeferred,
+        calcADF,
+        openPerpetuityWS,
+        calcPerp,
+        openReplacementCost,
+        calcRC
     };
 })();

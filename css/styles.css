@@ -167,6 +167,7 @@ body {
     margin-top: 2px;
     border-top: 1px solid rgba(255,255,255,0.06);
     padding-top: 6px;
+    grid-template-columns: repeat(6, 1fr);
 }
 
 /* ===== Key Base ===== */
@@ -299,6 +300,18 @@ body {
 }
 .k-sm .pri {
     font-size: 0.65rem;
+}
+
+/* Formulas key */
+.k-fml {
+    background: linear-gradient(180deg, #2a6e4a 0%, #1e5538 100%);
+    color: #c0f0d0;
+    min-height: 36px;
+    box-shadow: 0 2px 3px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.1);
+}
+.k-fml .pri {
+    font-size: 0.65rem;
+    font-weight: 700;
 }
 
 /* Highlight 2nd mode on keys */

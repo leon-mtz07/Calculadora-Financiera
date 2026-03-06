@@ -74,7 +74,8 @@
         'HYP':   { pri: () => { s.hypActive = !s.hypActive; E.updateDisplay(); } },
         'PCT':   { pri: () => E.percent() },
         'ROUND': { pri: () => E.mathRound() },
-        'EE':    { pri: eeKey }
+        'EE':    { pri: eeKey },
+        'FML':   { pri: () => W.openFormulas() }
     };
 
     // ===== Helpers =====
