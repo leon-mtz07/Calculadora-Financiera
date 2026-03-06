@@ -1,0 +1,777 @@
+/* ===== Reset & Base ===== */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html {
+    font-size: 16px;
+    overflow: hidden;
+    height: 100%;
+}
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    min-height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* ===== Calculator Wrapper ===== */
+.calculator-wrapper {
+    width: 100%;
+    max-width: 420px;
+    padding: 12px;
+}
+
+.calculator {
+    background: linear-gradient(180deg, #2a2a2a 0%, #1e1e1e 100%);
+    border-radius: 18px;
+    padding: 16px 12px 12px;
+    box-shadow:
+        0 20px 60px rgba(0,0,0,0.5),
+        0 0 0 1px rgba(255,255,255,0.05),
+        inset 0 1px 0 rgba(255,255,255,0.08);
+}
+
+/* ===== Header ===== */
+.calc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 8px 10px;
+}
+
+.brand {
+    font-size: 0.6rem;
+    font-weight: 600;
+    color: #999;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.model {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #ccc;
+    letter-spacing: 0.5px;
+}
+
+/* ===== Display ===== */
+.display-bezel {
+    background: #111;
+    border-radius: 10px;
+    padding: 3px;
+    margin-bottom: 14px;
+    box-shadow:
+        inset 0 2px 8px rgba(0,0,0,0.6),
+        0 1px 0 rgba(255,255,255,0.05);
+}
+
+.display-screen {
+    background: linear-gradient(180deg, #c8d8a0 0%, #b8c890 100%);
+    border-radius: 8px;
+    padding: 8px 12px;
+    min-height: 72px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.indicators {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+    min-height: 16px;
+    align-items: center;
+}
+
+.ind {
+    font-family: 'Share Tech Mono', 'JetBrains Mono', monospace;
+    font-size: 0.55rem;
+    font-weight: 700;
+    color: #4a5a30;
+    letter-spacing: 0.5px;
+    transition: opacity 0.1s;
+}
+
+.ind.hidden {
+    opacity: 0;
+}
+
+.ind:not(.hidden) {
+    opacity: 1;
+}
+
+.display-main {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 4px;
+    margin-top: 4px;
+}
+
+.display-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #3a4a25;
+    white-space: nowrap;
+    flex-shrink: 0;
+    min-width: 0;
+}
+
+.display-value {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1.65rem;
+    font-weight: 700;
+    color: #1a2a10;
+    text-align: right;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    letter-spacing: 1px;
+    line-height: 1;
+}
+
+.display-assign {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.8rem;
+    color: #3a4a25;
+    flex-shrink: 0;
+    margin-left: 2px;
+}
+
+/* ===== Keyboard ===== */
+.keyboard {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.key-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 5px;
+}
+
+.key-row-extra {
+    margin-top: 2px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    padding-top: 6px;
+}
+
+/* ===== Key Base ===== */
+.key {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 8px;
+    padding: 4px 2px 6px;
+    min-height: 46px;
+    cursor: pointer;
+    transition: transform 0.08s, box-shadow 0.08s, filter 0.08s;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+    touch-action: manipulation;
+}
+
+.key:active {
+    transform: scale(0.94) translateY(1px);
+    filter: brightness(0.85);
+}
+
+.key .sec {
+    font-size: 0.5rem;
+    font-weight: 600;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 0.3px;
+    line-height: 1;
+    margin-bottom: 2px;
+    min-height: 10px;
+    text-align: center;
+}
+
+.key .pri {
+    font-size: 0.78rem;
+    font-weight: 700;
+    line-height: 1.1;
+    text-align: center;
+}
+
+.key .pri sup {
+    font-size: 0.55rem;
+}
+
+/* ===== Key Variants ===== */
+
+/* 2nd key */
+.k-2nd {
+    background: linear-gradient(180deg, #d4a843 0%, #b8922e 100%);
+    color: #1a1a1a;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.3);
+}
+.k-2nd .sec { color: transparent; }
+.k-2nd.active {
+    background: linear-gradient(180deg, #f0c050 0%, #d4a843 100%);
+    box-shadow: 0 0 12px rgba(212,168,67,0.5), 0 2px 4px rgba(0,0,0,0.3);
+}
+
+/* TVM keys */
+.k-tvm {
+    background: linear-gradient(180deg, #2c4a7c 0%, #1e3560 100%);
+    color: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.12);
+}
+.k-tvm .sec { color: rgba(200,220,255,0.55); }
+
+/* CPT key */
+.k-cpt {
+    background: linear-gradient(180deg, #555 0%, #444 100%);
+    color: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+}
+
+/* Dark keys (ENTER, arrows, STO, RCL, etc) */
+.k-dark {
+    background: linear-gradient(180deg, #484848 0%, #383838 100%);
+    color: #e0e0e0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.08);
+}
+
+/* ON/OFF */
+.k-onoff {
+    background: linear-gradient(180deg, #484848 0%, #383838 100%);
+    color: #e0e0e0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.08);
+}
+
+/* Number keys */
+.k-num {
+    background: linear-gradient(180deg, #555 0%, #444 100%);
+    color: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.1);
+}
+.k-num .sec { color: rgba(200,200,255,0.55); }
+
+/* Operator keys */
+.k-op {
+    background: linear-gradient(180deg, #555 0%, #3e3e3e 100%);
+    color: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.1);
+}
+.k-op .sec { color: rgba(200,200,255,0.55); }
+
+/* Equals key */
+.k-eq {
+    background: linear-gradient(180deg, #555 0%, #444 100%);
+    color: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.1);
+}
+.k-eq .sec { color: rgba(200,200,255,0.55); }
+
+/* Function keys */
+.k-fn {
+    background: linear-gradient(180deg, #484848 0%, #383838 100%);
+    color: #ddd;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.08);
+}
+.k-fn .sec { color: rgba(200,200,255,0.55); }
+
+/* Small keys (extra row) */
+.k-sm {
+    background: linear-gradient(180deg, #3a3a3a 0%, #2e2e2e 100%);
+    color: #bbb;
+    min-height: 36px;
+    box-shadow: 0 2px 3px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.06);
+}
+.k-sm .pri {
+    font-size: 0.65rem;
+}
+
+/* Highlight 2nd mode on keys */
+.keyboard.second-active .key .sec {
+    color: #f0c050 !important;
+    text-shadow: 0 0 4px rgba(240,192,80,0.3);
+}
+.keyboard.second-active .k-2nd {
+    background: linear-gradient(180deg, #f0c050 0%, #d4a843 100%);
+    box-shadow: 0 0 12px rgba(212,168,67,0.5), 0 2px 4px rgba(0,0,0,0.3);
+}
+
+/* Calculator OFF state */
+.calculator.off .display-screen {
+    background: linear-gradient(180deg, #a0a880 0%, #90987a 100%);
+}
+.calculator.off .display-value,
+.calculator.off .display-label,
+.calculator.off .display-assign {
+    visibility: hidden;
+}
+.calculator.off .ind {
+    opacity: 0 !important;
+}
+
+/* ===== Worksheet Overlay ===== */
+.ws-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    animation: fadeIn 0.2s ease;
+}
+
+.ws-overlay.hidden {
+    display: none;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+.ws-panel {
+    background: #1e1e2e;
+    border-radius: 16px 16px 0 0;
+    width: 100%;
+    max-width: 480px;
+    max-height: 85vh;
+    overflow-y: auto;
+    animation: slideUp 0.25s ease;
+    box-shadow: 0 -4px 30px rgba(0,0,0,0.3);
+}
+
+.ws-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    position: sticky;
+    top: 0;
+    background: #1e1e2e;
+    z-index: 1;
+}
+
+.ws-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #e0e0e0;
+}
+
+.ws-close {
+    background: rgba(255,255,255,0.08);
+    border: none;
+    color: #aaa;
+    font-size: 1.3rem;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+}
+
+.ws-close:hover {
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+}
+
+.ws-body {
+    padding: 16px 20px 24px;
+    color: #ccc;
+    font-size: 0.9rem;
+}
+
+/* Worksheet form elements */
+.ws-field {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.ws-field:last-child {
+    border-bottom: none;
+}
+
+.ws-field-label {
+    font-weight: 600;
+    color: #aaa;
+    font-size: 0.82rem;
+    letter-spacing: 0.5px;
+    min-width: 60px;
+}
+
+.ws-field-value {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 6px;
+    padding: 8px 12px;
+    color: #e0e0e0;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.9rem;
+    width: 180px;
+    text-align: right;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.ws-field-value:focus {
+    border-color: #4a7acc;
+}
+
+.ws-field-value[readonly] {
+    background: rgba(100,180,100,0.08);
+    border-color: rgba(100,180,100,0.2);
+    color: #8fcf8f;
+}
+
+.ws-btn-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+}
+
+.ws-btn {
+    flex: 1;
+    min-width: 80px;
+    padding: 10px 12px;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.1s, filter 0.1s;
+}
+
+.ws-btn:active {
+    transform: scale(0.96);
+}
+
+.ws-btn-primary {
+    background: linear-gradient(180deg, #4a7acc, #3a60a8);
+    color: #fff;
+}
+
+.ws-btn-secondary {
+    background: rgba(255,255,255,0.08);
+    color: #ccc;
+}
+
+.ws-btn-danger {
+    background: rgba(200,60,60,0.2);
+    color: #e88;
+}
+
+.ws-select {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 6px;
+    padding: 8px 12px;
+    color: #e0e0e0;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.82rem;
+    outline: none;
+    cursor: pointer;
+}
+
+.ws-select option {
+    background: #2a2a3a;
+    color: #e0e0e0;
+}
+
+.ws-section-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #7a9acc;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin: 16px 0 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.ws-section-title:first-child {
+    margin-top: 0;
+    border-top: none;
+    padding-top: 0;
+}
+
+.ws-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 8px 0;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.8rem;
+}
+
+.ws-table th {
+    text-align: left;
+    color: #7a9acc;
+    font-weight: 600;
+    padding: 6px 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    font-size: 0.7rem;
+    letter-spacing: 0.5px;
+}
+
+.ws-table td {
+    padding: 6px 8px;
+    color: #ccc;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    text-align: right;
+}
+
+.ws-table td:first-child {
+    text-align: left;
+    color: #999;
+}
+
+.ws-info {
+    font-size: 0.75rem;
+    color: #888;
+    margin-top: 8px;
+    line-height: 1.4;
+}
+
+.ws-cf-list {
+    max-height: 200px;
+    overflow-y: auto;
+    margin: 8px 0;
+}
+
+.ws-cf-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.ws-cf-item label {
+    font-size: 0.75rem;
+    color: #999;
+    min-width: 35px;
+}
+
+.ws-cf-item input {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 4px;
+    padding: 5px 8px;
+    color: #e0e0e0;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.8rem;
+    width: 100px;
+    text-align: right;
+    outline: none;
+}
+
+.ws-cf-item input:focus {
+    border-color: #4a7acc;
+}
+
+.ws-cf-item .freq {
+    width: 50px;
+}
+
+/* ===== Responsive ===== */
+
+/* Small phones */
+@media (max-width: 360px) {
+    .calculator-wrapper {
+        padding: 4px;
+    }
+    .calculator {
+        padding: 10px 6px 8px;
+        border-radius: 12px;
+    }
+    .key {
+        min-height: 40px;
+        border-radius: 6px;
+        padding: 3px 1px 4px;
+    }
+    .key .pri {
+        font-size: 0.7rem;
+    }
+    .key .sec {
+        font-size: 0.42rem;
+    }
+    .display-value {
+        font-size: 1.4rem;
+    }
+    .key-row {
+        gap: 3px;
+    }
+    .keyboard {
+        gap: 4px;
+    }
+    .k-sm {
+        min-height: 32px;
+    }
+}
+
+/* Regular phones */
+@media (min-width: 361px) and (max-width: 480px) {
+    .calculator-wrapper {
+        padding: 8px;
+    }
+    .key {
+        min-height: 44px;
+    }
+}
+
+/* Tall phones - use more vertical space */
+@media (min-height: 700px) and (max-width: 480px) {
+    .key {
+        min-height: 48px;
+    }
+}
+
+@media (min-height: 800px) and (max-width: 480px) {
+    .key {
+        min-height: 52px;
+    }
+    .display-bezel {
+        margin-bottom: 18px;
+    }
+    .display-screen {
+        min-height: 80px;
+        padding: 10px 14px;
+    }
+    .display-value {
+        font-size: 1.8rem;
+    }
+}
+
+/* Tablets */
+@media (min-width: 481px) and (max-width: 768px) {
+    .calculator-wrapper {
+        max-width: 440px;
+    }
+    .key {
+        min-height: 52px;
+    }
+    .key .pri {
+        font-size: 0.85rem;
+    }
+    .display-value {
+        font-size: 1.9rem;
+    }
+}
+
+/* Desktop */
+@media (min-width: 769px) {
+    .calculator-wrapper {
+        max-width: 440px;
+    }
+    .key {
+        min-height: 54px;
+        cursor: pointer;
+    }
+    .key:hover {
+        filter: brightness(1.1);
+    }
+    .key .pri {
+        font-size: 0.88rem;
+    }
+    .key .sec {
+        font-size: 0.55rem;
+    }
+    .display-screen {
+        min-height: 84px;
+        padding: 10px 16px;
+    }
+    .display-value {
+        font-size: 2rem;
+    }
+
+    .ws-overlay {
+        align-items: center;
+    }
+    .ws-panel {
+        border-radius: 16px;
+        max-height: 80vh;
+    }
+}
+
+/* Landscape phones */
+@media (max-height: 500px) and (orientation: landscape) {
+    body {
+        align-items: flex-start;
+        overflow-y: auto;
+    }
+    .calculator-wrapper {
+        max-width: 500px;
+        padding: 6px;
+    }
+    .calculator {
+        padding: 8px 10px;
+    }
+    .calc-header {
+        padding: 0 8px 4px;
+    }
+    .display-bezel {
+        margin-bottom: 6px;
+    }
+    .display-screen {
+        min-height: 52px;
+        padding: 4px 12px;
+    }
+    .display-value {
+        font-size: 1.3rem;
+    }
+    .indicators {
+        min-height: 12px;
+    }
+    .ind {
+        font-size: 0.45rem;
+    }
+    .key {
+        min-height: 34px;
+        padding: 2px 1px 3px;
+        border-radius: 5px;
+    }
+    .key .pri {
+        font-size: 0.65rem;
+    }
+    .key .sec {
+        font-size: 0.4rem;
+    }
+    .keyboard {
+        gap: 3px;
+    }
+    .key-row {
+        gap: 3px;
+    }
+    .k-sm {
+        min-height: 28px;
+    }
+}

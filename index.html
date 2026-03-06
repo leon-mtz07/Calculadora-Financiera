@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BA II Plus — Calculadora Financiera</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="calculator-wrapper">
+        <div class="calculator">
+            <!-- Header -->
+            <div class="calc-header">
+                <span class="brand">TEXAS INSTRUMENTS</span>
+                <span class="model">BA II PLUS</span>
+            </div>
+
+            <!-- Display -->
+            <div class="display-bezel">
+                <div class="display-screen">
+                    <div class="indicators" id="indicators">
+                        <span id="ind-2nd" class="ind hidden">2ND</span>
+                        <span id="ind-inv" class="ind hidden">INV</span>
+                        <span id="ind-hyp" class="ind hidden">HYP</span>
+                        <span id="ind-compute" class="ind hidden">COMPUTE</span>
+                        <span id="ind-enter" class="ind hidden">ENTER</span>
+                        <span id="ind-set" class="ind hidden">SET</span>
+                        <span id="ind-up" class="ind hidden">&uarr;</span>
+                        <span id="ind-down" class="ind hidden">&darr;</span>
+                        <span id="ind-del" class="ind hidden">DEL</span>
+                        <span id="ind-ins" class="ind hidden">INS</span>
+                        <span id="ind-bgn" class="ind hidden">BGN</span>
+                        <span id="ind-rad" class="ind hidden">RAD</span>
+                    </div>
+                    <div class="display-main">
+                        <span class="display-label" id="display-label"></span>
+                        <span class="display-value" id="display-value">0</span>
+                        <span class="display-assign" id="display-assign"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Keyboard -->
+            <div class="keyboard" id="keyboard">
+                <!-- Row 1 -->
+                <div class="key-row">
+                    <button class="key k-2nd" data-key="2ND">
+                        <span class="sec">&nbsp;</span>
+                        <span class="pri">2nd</span>
+                    </button>
+                    <button class="key k-dark" data-key="ENTER">
+                        <span class="sec">QUIT</span>
+                        <span class="pri">ENTER</span>
+                    </button>
+                    <button class="key k-dark" data-key="UP">
+                        <span class="sec">SET</span>
+                        <span class="pri">&uarr;</span>
+                    </button>
+                    <button class="key k-dark" data-key="DOWN">
+                        <span class="sec">DEL</span>
+                        <span class="pri">&darr;</span>
+                    </button>
+                    <button class="key k-onoff" data-key="ONOFF">
+                        <span class="sec">INS</span>
+                        <span class="pri">ON/OFF</span>
+                    </button>
+                </div>
+                <!-- Row 2: TVM -->
+                <div class="key-row">
+                    <button class="key k-tvm" data-key="N">
+                        <span class="sec">xP/Y</span>
+                        <span class="pri">N</span>
+                    </button>
+                    <button class="key k-tvm" data-key="IY">
+                        <span class="sec">P/Y</span>
+                        <span class="pri">I/Y</span>
+                    </button>
+                    <button class="key k-tvm" data-key="PV">
+                        <span class="sec">AMORT</span>
+                        <span class="pri">PV</span>
+                    </button>
+                    <button class="key k-tvm" data-key="PMT">
+                        <span class="sec">BGN</span>
+                        <span class="pri">PMT</span>
+                    </button>
+                    <button class="key k-tvm" data-key="FV">
+                        <span class="sec">CLR TVM</span>
+                        <span class="pri">FV</span>
+                    </button>
+                </div>
+                <!-- Row 3 -->
+                <div class="key-row">
+                    <button class="key k-cpt" data-key="CPT">
+                        <span class="sec">&nbsp;</span>
+                        <span class="pri">CPT</span>
+                    </button>
+                    <button class="key k-dark" data-key="LPAREN">
+                        <span class="sec">nPr</span>
+                        <span class="pri">(</span>
+                    </button>
+                    <button class="key k-dark" data-key="RPAREN">
+                        <span class="sec">nCr</span>
+                        <span class="pri">)</span>
+                    </button>
+                    <button class="key k-dark" data-key="STO">
+                        <span class="sec">K</span>
+                        <span class="pri">STO</span>
+                    </button>
+                    <button class="key k-dark" data-key="RCL">
+                        <span class="sec">ANS</span>
+                        <span class="pri">RCL</span>
+                    </button>
+                </div>
+                <!-- Row 4 -->
+                <div class="key-row">
+                    <button class="key k-dark" data-key="SIGN">
+                        <span class="sec">CF</span>
+                        <span class="pri">&plus;&frasl;&minus;</span>
+                    </button>
+                    <button class="key k-dark" data-key="CEC">
+                        <span class="sec">CLR WORK</span>
+                        <span class="pri">CE/C</span>
+                    </button>
+                    <button class="key k-dark" data-key="BKSP">
+                        <span class="sec">&nbsp;</span>
+                        <span class="pri">&larr;</span>
+                    </button>
+                    <button class="key k-op" data-key="DIV">
+                        <span class="sec">ICONV</span>
+                        <span class="pri">&divide;</span>
+                    </button>
+                    <button class="key k-op" data-key="MUL">
+                        <span class="sec">MEM</span>
+                        <span class="pri">&times;</span>
+                    </button>
+                </div>
+                <!-- Row 5 -->
+                <div class="key-row">
+                    <button class="key k-fn" data-key="YX">
+                        <span class="sec">1/x</span>
+                        <span class="pri">y<sup>x</sup></span>
+                    </button>
+                    <button class="key k-num" data-key="7">
+                        <span class="sec">DATA</span>
+                        <span class="pri">7</span>
+                    </button>
+                    <button class="key k-num" data-key="8">
+                        <span class="sec">STAT</span>
+                        <span class="pri">8</span>
+                    </button>
+                    <button class="key k-num" data-key="9">
+                        <span class="sec">&Delta;%</span>
+                        <span class="pri">9</span>
+                    </button>
+                    <button class="key k-op" data-key="SUB">
+                        <span class="sec">FORMAT</span>
+                        <span class="pri">&minus;</span>
+                    </button>
+                </div>
+                <!-- Row 6 -->
+                <div class="key-row">
+                    <button class="key k-fn" data-key="SQRT">
+                        <span class="sec">x&sup2;</span>
+                        <span class="pri">&radic;x</span>
+                    </button>
+                    <button class="key k-num" data-key="4">
+                        <span class="sec">DATE</span>
+                        <span class="pri">4</span>
+                    </button>
+                    <button class="key k-num" data-key="5">
+                        <span class="sec">PROFIT</span>
+                        <span class="pri">5</span>
+                    </button>
+                    <button class="key k-num" data-key="6">
+                        <span class="sec">BRKEVN</span>
+                        <span class="pri">6</span>
+                    </button>
+                    <button class="key k-op" data-key="ADD">
+                        <span class="sec">RESET</span>
+                        <span class="pri">&plus;</span>
+                    </button>
+                </div>
+                <!-- Row 7 -->
+                <div class="key-row">
+                    <button class="key k-fn" data-key="LN">
+                        <span class="sec">e<sup>x</sup></span>
+                        <span class="pri">LN</span>
+                    </button>
+                    <button class="key k-num" data-key="1">
+                        <span class="sec">BOND</span>
+                        <span class="pri">1</span>
+                    </button>
+                    <button class="key k-num" data-key="2">
+                        <span class="sec">DEPR</span>
+                        <span class="pri">2</span>
+                    </button>
+                    <button class="key k-num" data-key="3">
+                        <span class="sec">n!</span>
+                        <span class="pri">3</span>
+                    </button>
+                    <button class="key k-eq" data-key="EQ">
+                        <span class="sec">NPV</span>
+                        <span class="pri">=</span>
+                    </button>
+                </div>
+                <!-- Row 8 -->
+                <div class="key-row">
+                    <button class="key k-fn" data-key="SIN">
+                        <span class="sec">SIN<sup>-1</sup></span>
+                        <span class="pri">SIN</span>
+                    </button>
+                    <button class="key k-fn" data-key="COS">
+                        <span class="sec">COS<sup>-1</sup></span>
+                        <span class="pri">COS</span>
+                    </button>
+                    <button class="key k-fn" data-key="TAN">
+                        <span class="sec">TAN<sup>-1</sup></span>
+                        <span class="pri">TAN</span>
+                    </button>
+                    <button class="key k-num" data-key="0">
+                        <span class="sec">IRR</span>
+                        <span class="pri">0</span>
+                    </button>
+                    <button class="key k-num" data-key="DOT">
+                        <span class="sec">RAND</span>
+                        <span class="pri">.</span>
+                    </button>
+                </div>
+                <!-- Row 9: Extra row for HYP, INV, % -->
+                <div class="key-row key-row-extra">
+                    <button class="key k-sm" data-key="INV">
+                        <span class="sec">&nbsp;</span>
+                        <span class="pri">INV</span>
+                    </button>
+                    <button class="key k-sm" data-key="HYP">
+                        <span class="sec">&nbsp;</span>
+                        <span class="pri">HYP</span>
+                    </button>
+                    <button class="key k-sm" data-key="PCT">
+                        <span class="sec">&nbsp;</span>
+                        <span class="pri">%</span>
+                    </button>
+                    <button class="key k-sm" data-key="ROUND">
+                        <span class="sec">&nbsp;</span>
+                        <span class="pri">RND</span>
+                    </button>
+                    <button class="key k-sm" data-key="EE">
+                        <span class="sec">&nbsp;</span>
+                        <span class="pri">EE</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Worksheet Modal -->
+    <div class="ws-overlay hidden" id="ws-overlay">
+        <div class="ws-panel" id="ws-panel">
+            <div class="ws-header">
+                <span class="ws-title" id="ws-title">Worksheet</span>
+                <button class="ws-close" id="ws-close">&times;</button>
+            </div>
+            <div class="ws-body" id="ws-body"></div>
+        </div>
+    </div>
+
+    <script src="js/engine.js"></script>
+    <script src="js/worksheets.js"></script>
+    <script src="js/ui.js"></script>
+</body>
+</html>
